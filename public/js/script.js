@@ -43,6 +43,15 @@ recognition.addEventListener('error', (e) => {
 function synthVoice(text) {
   const synth = window.speechSynthesis;
   const utterance = new SpeechSynthesisUtterance();
+
+  utterance.onstart = function(event) {
+      resumeInfinity();
+  };
+
+  utterance.onend = function(event) {
+      clearTimeout(timeoutResumeInfinity);
+  };
+
   utterance.text = text;
   synth.speak(utterance);
 }
@@ -53,3 +62,8 @@ socket.on('bot reply', function(replyText) {
   if(replyText == '') replyText = '(No answer...)';
   outputBot.textContent = replyText;
 });
+
+function resumeInfinity() {
+    window.speechSynthesis.resume();
+    timeoutResumeInfinity = setTimeout(resumeInfinity, 1000);
+}
